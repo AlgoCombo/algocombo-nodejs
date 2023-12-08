@@ -1,6 +1,6 @@
 import client from "../constants/client.ts";
 import { AGGREGATOR_ADDRESS } from "../constants/index.ts";
-import abi from "../abis/AggregatorV3Interface.json";
+import abi from "../abis/AggregatorV3Interface.json" assert { type: "json" };
 
 export async function getHistoricalData(feed = "AAVE/USD") {
   const address = AGGREGATOR_ADDRESS[feed];
@@ -15,7 +15,7 @@ export async function getHistoricalData(feed = "AAVE/USD") {
   // Timestamp in Milliseconds
   const updatedAt = Number(roundData[3]) * 1000;
 
-  console.log("updated at ", new Date(updatedAt))
+  console.log("updated at ", new Date(updatedAt));
 
   return roundData;
 }
