@@ -1,9 +1,14 @@
 {
     "compilerOptions": {
-        "module": "ESNext",
+        "module": "NodeNext",
         "target": "ESNext",
         "outDir": "dist",
         "rootDir": "src",
-        "allowSyntheticDefaultImports": true
+        "allowSyntheticDefaultImports": true,
+        "moduleResolution": "NodeNext",
+        "allowImportingTsExtensions": true,
+        "emitDeclarationOnly": true,
+        "declaration": true,
+        "resolveJsonModule": true
     }
 }
