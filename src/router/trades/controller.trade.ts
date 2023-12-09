@@ -2,7 +2,7 @@ import { Address, recoverMessageAddress } from "viem";
 import Web3 from "web3";
 import { TradeModel } from "../../models/trades.model";
 import { UserModel } from "../../models/user.model";
-import { approveERC20Token, transferTokens } from "../../utils";
+import { approveERC20Token, transferTokens, getCoinDetails } from "../../utils";
 import { swap } from "../../swap";
 // import { RPC_URLS } from "../../constants";
 import { ONE_INCH_ROUTER_V5 } from "@1inch/fusion-sdk";
@@ -120,6 +120,7 @@ class TradeController {
     }
   }
 
+  //TEST
   async createSwaps(body: any) {
     /*
     body will have only trade_id and signal
@@ -172,12 +173,22 @@ class TradeController {
         }
       }
 
+      const coin_address = getCoinDetails(
+        current_trade.current_coin,
+        current_trade.chain_id
+      );
+
+      const next_coin_address = getCoinDetails(
+        current_coin,
+        current_trade.chain_id
+      );
+
       //TODO: Fusion API swap
       const web3 = new Web3(current_trade.chain_id);
       console.log("Approving...");
       const approval_status = await approveERC20Token(
         web3,
-        current_trade.current_coin, // the coin address will get late
+        coin_address,
         current_trade.creator.hot_wallet_private_key,
         ONE_INCH_ROUTER_V5,
         current_trade.amount
@@ -192,8 +203,8 @@ class TradeController {
 
       const swap_data: any = await swap(
         current_trade.amount,
-        current_trade.current_coin, // the coin address will get later,
-        current_coin, // the coin address will get later,
+        coin_address,
+        next_coin_address,
         current_trade.creator.hot_wallet_public_key,
         current_trade.creator.hot_wallet_private_key,
         current_trade.chainId
@@ -213,7 +224,7 @@ class TradeController {
         trade_id: current_trade.trade_id,
         current_coin: current_coin,
         coin_pairs: current_trade.coin_pairs,
-        amount: swap_data.amount, //will get from fusion api later
+        amount: swap_data.amount, //will get from fusion api later TODO
         chain_id: current_trade.chain_id,
         isActive: current_trade.isActive,
         creator: current_trade.creator,
@@ -313,6 +324,7 @@ class TradeController {
     }
   }
 
+  //TEST
   async closeTrade(params: any) {
     try {
       const trade = await TradeModel.findOne({
@@ -327,10 +339,13 @@ class TradeController {
           message: "Trade does not exist",
         };
       }
+
+      const coin_address = getCoinDetails(trade.current_coin, trade.chain_id);
+
       const txn_hash = await transferTokens(
         trade.creator.hot_wallet_private_key as Address,
         trade.creator.wallet_address as Address,
-        trade.current_coin as Address, //need to replace with address
+        coin_address as Address,
         trade.amount.toString()
       );
       if (!txn_hash) {

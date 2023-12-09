@@ -1,5 +1,6 @@
 import Web3 from "web3";
 import ERC20_ABI from "../abis/ERC20.json";
+import { TOKENS } from "../constants/tokens";
 
 export async function approveERC20Token(
   web3: Web3,
@@ -42,6 +43,18 @@ export async function approveERC20Token(
     return true;
   } catch (error) {
     console.error("Failed to approve ERC20 token:", error);
+    return false;
+  }
+}
+
+export function getCoinDetails(coin: string, chain_id: number) {
+  try {
+    const coin_details: any = TOKENS[chain_id].filter(
+      (token: any) => token.name === coin
+    )[0];
+    return coin_details;
+  } catch (error) {
+    console.error("Failed to get token data:", error);
     return false;
   }
 }
