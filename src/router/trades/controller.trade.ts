@@ -5,10 +5,7 @@ import { UserModel } from "../../models/user.model";
 class TradeController {
   async getActiveTrades(body: any) {
     try {
-      const wallet_address = await recoverMessageAddress({
-        message: "hello world",
-        signature: body.signature,
-      });
+      const wallet_address = body.wallet_address;
 
       const earliestTrades = await TradeModel.aggregate([
         {
