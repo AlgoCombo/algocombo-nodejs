@@ -1,6 +1,8 @@
 import Web3 from "web3";
 import ERC20_ABI from "../abis/ERC20.json";
 import { TOKENS } from "../constants/tokens";
+import { BigNumber } from "ethers";
+import { formatEther } from "ethers/lib/utils";
 
 export async function approveERC20Token(
   web3: Web3,
@@ -16,6 +18,16 @@ export async function approveERC20Token(
     );
     const account = web3.eth.accounts.privateKeyToAccount(privateKey);
     web3.eth.defaultAccount = account.address;
+
+    /// Check Allowance otherwise Approve
+    const allowance = (await tokenContract.methods.allowance(
+      account.address,
+      spenderAddress
+    )) as BigNumber;
+    if (+formatEther(allowance) >= +amount) {
+      return true; // No need to approve any furthur
+    }
+    ///
 
     // @ts-ignore
     const approvalData = tokenContract.methods
