@@ -13,4 +13,7 @@ app.get("/", (_, res) => {
   res.send("Hello World!");
 });
 
+import userRouter from "./router/users/api.user";
+app.use("/users", userRouter);
+
 export default app;
