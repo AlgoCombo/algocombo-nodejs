@@ -9,8 +9,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 //routes
-app.get("/", (_, res) => {
-  res.send("Hello World!");
+app.get("/health", (_, res) => {
+  res.status(200).send("Hello World!");
 });
 
 //import user router
