@@ -74,7 +74,7 @@ class TradeController {
   async createTrade(body: any) {
     try {
       const wallet_address = await recoverMessageAddress({
-        message: "hello world",
+        message: "new trade request",
         signature: body.signature,
       });
       const user: any = await UserModel.findOne({ wallet_address });

@@ -18,4 +18,9 @@ router.post("/swap", async (req: Request, res: Response) => {
   return res.status(response.status).json(response);
 });
 
+router.get("/trade-cron", async (_: Request, res: Response) => {
+  const response = await TradeController.cronJobTrades();
+  return res.status(response.status).json(response);
+});
+
 export default router;
