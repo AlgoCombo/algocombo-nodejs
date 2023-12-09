@@ -124,10 +124,12 @@ class TradeController {
 
   async createTrade(body: any) {
     try {
-      const wallet_address = await recoverMessageAddress({
+      let wallet_addresss = await recoverMessageAddress({
         message: body.message,
         signature: body.signature,
       });
+      console.log(wallet_addresss);
+      const wallet_address = body.wallet_address;
       const wallet_creation_data = await UserController.createUserHelper({
         wallet_address,
       });
