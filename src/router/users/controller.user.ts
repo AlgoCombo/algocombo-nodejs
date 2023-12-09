@@ -43,7 +43,7 @@ class UserController {
       const new_user_data = {
         wallet_address,
         hot_wallet_public_key: hot_wallet_data.address,
-        hot_wallet_private_key: body.private_key,
+        hot_wallet_private_key: hot_wallet_data.privateKey,
       };
       const new_user = await UserModel.create(new_user_data);
 
