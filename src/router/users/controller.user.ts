@@ -64,11 +64,7 @@ class UserController {
 
   async getHotWallet(body: any) {
     try {
-      const wallet_address = await recoverMessageAddress({
-        message: "hello world",
-        signature: body.signature,
-      });
-      console.log(wallet_address);
+      const wallet_address = body.wallet_address;
 
       let data;
       const hot_wallet: any = await UserModel.findOne({ wallet_address });

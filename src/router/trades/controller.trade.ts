@@ -1,8 +1,8 @@
-import { recoverMessageAddress } from "viem";
+import { Address, recoverMessageAddress } from "viem";
 import Web3 from "web3";
 import { TradeModel } from "../../models/trades.model";
 import { UserModel } from "../../models/user.model";
-import { approveERC20Token } from "../../utils";
+import { approveERC20Token, transferTokens, getCoinDetails } from "../../utils";
 import { swap } from "../../swap";
 // import { RPC_URLS } from "../../constants";
 import { ONE_INCH_ROUTER_V5 } from "@1inch/fusion-sdk";
@@ -71,10 +71,30 @@ class TradeController {
     }
   }
 
+  async getTradeLogs(params: any) {
+    try {
+      const trade_logs = await TradeModel.find({
+        trade_id: params.trade_id,
+      }).sort({ createdAt: 1 });
+      return {
+        status: 200,
+        message: "Trade logs found",
+        data: trade_logs,
+      };
+    } catch (error: any) {
+      console.log(error);
+      return {
+        status: 500,
+        message: "Internal server error",
+        data: error,
+      };
+    }
+  }
+
   async createTrade(body: any) {
     try {
       const wallet_address = await recoverMessageAddress({
-        message: "new trade request",
+        message: "hello world",
         signature: body.signature,
       });
       const user: any = await UserModel.findOne({ wallet_address });
@@ -100,6 +120,7 @@ class TradeController {
     }
   }
 
+  //TEST
   async createSwaps(body: any) {
     /*
     body will have only trade_id and signal
@@ -152,12 +173,22 @@ class TradeController {
         }
       }
 
+      const coin_address = getCoinDetails(
+        current_trade.current_coin,
+        current_trade.chain_id
+      );
+
+      const next_coin_address = getCoinDetails(
+        current_coin,
+        current_trade.chain_id
+      );
+
       //TODO: Fusion API swap
       const web3 = new Web3(current_trade.chain_id);
       console.log("Approving...");
       const approval_status = await approveERC20Token(
         web3,
-        current_trade.current_coin, // the coin address will get late
+        coin_address,
         current_trade.creator.hot_wallet_private_key,
         ONE_INCH_ROUTER_V5,
         current_trade.amount
@@ -172,8 +203,8 @@ class TradeController {
 
       const swap_data: any = await swap(
         current_trade.amount,
-        current_trade.current_coin, // the coin address will get later,
-        current_coin, // the coin address will get later,
+        coin_address,
+        next_coin_address,
         current_trade.creator.hot_wallet_public_key,
         current_trade.creator.hot_wallet_private_key,
         current_trade.chainId
@@ -193,7 +224,7 @@ class TradeController {
         trade_id: current_trade.trade_id,
         current_coin: current_coin,
         coin_pairs: current_trade.coin_pairs,
-        amount: swap_data.amount, //will get from fusion api later
+        amount: swap_data.amount, //will get from fusion api later TODO
         chain_id: current_trade.chain_id,
         isActive: current_trade.isActive,
         creator: current_trade.creator,
@@ -282,6 +313,59 @@ class TradeController {
       return {
         status: 200,
         message: "Cron job done",
+      };
+    } catch (error: any) {
+      console.log(error);
+      return {
+        status: 500,
+        message: "Internal server error",
+        data: error,
+      };
+    }
+  }
+
+  //TEST
+  async closeTrade(params: any) {
+    try {
+      const trade = await TradeModel.findOne({
+        trade_id: params.trade_id,
+        isActive: true,
+      })
+        .sort({ createdAt: -1 })
+        .limit(1);
+      if (!trade) {
+        return {
+          status: 404,
+          message: "Trade does not exist",
+        };
+      }
+
+      const coin_address = getCoinDetails(trade.current_coin, trade.chain_id);
+
+      const txn_hash = await transferTokens(
+        trade.creator.hot_wallet_private_key as Address,
+        trade.creator.wallet_address as Address,
+        coin_address as Address,
+        trade.amount.toString()
+      );
+      if (!txn_hash) {
+        return {
+          status: 500,
+          message: "Could not withdraw funds. Reverting delete",
+        };
+      }
+
+      await TradeModel.updateMany(
+        {
+          trade_id: params.trade_id,
+          isActive: true,
+        },
+        { $set: { isActive: false } }
+      );
+
+      return {
+        status: 200,
+        message: "Trade withdrawn",
       };
     } catch (error: any) {
       console.log(error);

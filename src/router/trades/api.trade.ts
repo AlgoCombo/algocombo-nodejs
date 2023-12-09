@@ -8,6 +8,11 @@ router.post("/active-trades", async (req: Request, res: Response) => {
   return res.status(response.status).json(response);
 });
 
+router.get("/:trade_id", async (req: Request, res: Response) => {
+  const response = await TradeController.getTradeLogs(req.params);
+  return res.status(response.status).json(response);
+});
+
 router.post("/", async (req: Request, res: Response) => {
   const response = await TradeController.createTrade(req.body);
   return res.status(response.status).json(response);
@@ -20,6 +25,11 @@ router.post("/swap", async (req: Request, res: Response) => {
 
 router.get("/trade-cron", async (_: Request, res: Response) => {
   const response = await TradeController.cronJobTrades();
+  return res.status(response.status).json(response);
+});
+
+router.delete("/:trade_id", async (req: Request, res: Response) => {
+  const response = await TradeController.closeTrade(req.params);
   return res.status(response.status).json(response);
 });
 
