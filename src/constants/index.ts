@@ -17,7 +17,8 @@ export const RPC_URLS = {
 } as Record<number, string>;
 
 export const V3_SWAP_ROUTER_ADDRESS = {
-  default: "0xE592427A0AEce92De3Edee1F18E0157C05861564", // Mainnet, Polygon, Optimism, Arbitrum, Testnets Address
+  // default: "0xE592427A0AEce92De3Edee1F18E0157C05861564", // Mainnet, Polygon, Optimism, Arbitrum, Testnets Address
+  default: "0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45", // Mainnet, Polygon, Optimism, Arbitrum, Testnets Address
   celo: "0x5615CDAb10dc425a742d643d949a7F474C01abc4", // Celo
 };
 

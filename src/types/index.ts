@@ -1,4 +1,5 @@
 import { Address } from "viem";
+import { Token } from "@uniswap/sdk-core";
 
 export interface TokenInfo {
   symbol: string;
@@ -13,4 +14,17 @@ export interface SwapData {
   walletAddress: Address;
   privateKey: Address;
   chainId: number;
+}
+
+export interface BasicConfig {
+  rpc: string;
+  wallet: {
+    address: string;
+    privateKey: string;
+  };
+  tokens: {
+    in: Token;
+    out: Token;
+    amountIn: string | number;
+  };
 }
