@@ -15,24 +15,11 @@ import {
   RPC_URLS,
   V3_SWAP_ROUTER_ADDRESS,
 } from "../../constants";
-import { TokenInfo } from "types";
+import { BasicConfig, TokenInfo } from "types";
 import { Address } from "viem";
 
 import { formatEther, parseUnits } from "ethers/lib/utils";
 import { ethers } from "ethers";
-
-interface BasicConfig {
-  rpc: string;
-  wallet: {
-    address: string;
-    privateKey: string;
-  };
-  tokens: {
-    in: Token;
-    amountIn: string | number;
-    out: Token;
-  };
-}
 
 export async function approveDEX(
   amountIn: string,
@@ -144,15 +131,19 @@ export async function swap(
   // Fee Data for max fees and stuff
   const feeData = await provider.getFeeData();
 
+  console.log({ methodParameters: route.methodParameters });
+
   const { hash, wait } = await wallet.sendTransaction({
     data: route.methodParameters.calldata,
     to: V3_SWAP_ROUTER_ADDRESS.default,
     value: route.methodParameters.value,
     from: wallet.address,
-    gasLimit: 40_000,
-    maxFeePerGas: feeData.maxFeePerGas || MAX_FEE_PER_GAS,
+    gasLimit: 10_000_000,
+    maxFeePerGas:
+      feeData.maxFeePerGas?.mul("200").div("100") || MAX_FEE_PER_GAS,
     maxPriorityFeePerGas:
-      feeData.maxPriorityFeePerGas || MAX_PRIORITY_FEE_PER_GAS,
+      feeData.maxPriorityFeePerGas?.mul("200").div("100") ||
+      MAX_PRIORITY_FEE_PER_GAS,
   });
 
   console.log("Swap txn it sent with hash", hash);
