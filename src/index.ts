@@ -1,5 +1,4 @@
 import express from "express";
-import { getHistoricalData } from "./chainlink/getHistoricalData.ts";
 
 const app = express();
 
@@ -23,11 +22,6 @@ app.get("/execute", (req, res) => {
   // Call Python API to run each trade's algorithm
   // If positive, execute the trade using 1Inch
   // Log the results in database
-});
-
-// TESTING
-app.get("/data", async (req, res) => {
-  res.send(await getHistoricalData());
 });
 
 app.listen(PORT, () => {
