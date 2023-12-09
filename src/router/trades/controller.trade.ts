@@ -71,6 +71,26 @@ class TradeController {
     }
   }
 
+  async getTradeLogs(params: any) {
+    try {
+      const trade_logs = await TradeModel.find({
+        trade_id: params.trade_id,
+      }).sort({ createdAt: 1 });
+      return {
+        status: 200,
+        message: "Trade logs found",
+        data: trade_logs,
+      };
+    } catch (error: any) {
+      console.log(error);
+      return {
+        status: 500,
+        message: "Internal server error",
+        data: error,
+      };
+    }
+  }
+
   async createTrade(body: any) {
     try {
       const wallet_address = await recoverMessageAddress({
