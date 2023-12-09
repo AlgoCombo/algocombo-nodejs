@@ -1,12 +1,12 @@
 import mongodbInstance from "./src/handlers/mongodb.handler";
 import app from "./src/app";
 
-const port = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;
 
 (async () => {
   try {
     // Connect to database
-    mongodbInstance.on("error", (error) => {
+    mongodbInstance.on("error", (error: any) => {
       console.error("Database connection error:", error);
     });
 
@@ -15,8 +15,8 @@ const port = process.env.PORT || 3000;
     });
 
     //start app
-    app.listen(port, () => {
-      console.log(`Server running on port ${port}`);
+    app.listen(PORT, () => {
+      console.log(`Server running at http://localhost:${PORT}/`);
     });
   } catch (err: any) {
     console.log(err);
