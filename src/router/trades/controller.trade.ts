@@ -240,8 +240,8 @@ class TradeController {
       // const algorithms_url=`https://algocombo-backend.onrender.com/algorithms/get_signal/${algorithm_name}`
       const algorithms_response = Promise.all(
         latest_active_trades.map(async (trade: any) => {
-          const algorithm_name = trade.latestTrade.algorithm.name;
-          const algorithms_url = `https://algocombo-backend.onrender.com/algorithms/get_signal/${algorithm_name}`;
+          const algorithm = JSON.parse(trade.latestTrade.algorithm);
+          const algorithms_url = `https://algocombo-backend.onrender.com/algorithms/get_signal/${algorithm.name}`;
           let current_coin;
           const coin_pairs = trade.latestTrade.coin_pairs;
           for (let i = 0; i < coin_pairs.length; i++) {
@@ -254,13 +254,14 @@ class TradeController {
             coin1: trade.latestTrade.current_coin,
             coin2: current_coin,
           };
+
           const response = await fetch(algorithms_url, {
             body: JSON.stringify(post_body),
             method: "POST",
             headers: { "Content-Type": "application/json" },
           });
-          const data = response.json();
-          return data;
+
+          return response;
         })
       );
 
