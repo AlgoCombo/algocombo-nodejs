@@ -24,7 +24,7 @@ class UserController {
   async createUser(body: any) {
     try {
       const wallet_address = await recoverMessageAddress({
-        message: "hello world",
+        message: body.message,
         signature: body.signature,
       });
 

@@ -2,7 +2,7 @@ import { ethers } from "ethers";
 import { JsonRpcProvider } from "ethers";
 import dataStorageABI from "../abis/dataStorage.json";
 import { RPC_URLS } from "../constants";
-import { DATA_CONTRACTS } from "constants/tokens";
+import { DATA_CONTRACTS } from "../constants/tokens";
 import { getCoinDetails } from "./token";
 
 export async function storeOnChain(data: any) {
@@ -18,7 +18,7 @@ export async function storeOnChain(data: any) {
     const contractABI = dataStorageABI; // Your contract ABI here
     const contract = new ethers.Contract(contractAddress, contractABI, wallet);
 
-    const coin1_addresss = getCoinDetails(data.coin1, data.chain_id).address;
+    const coin1_address = getCoinDetails(data.coin1, data.chain_id).address;
     const coin2_address = getCoinDetails(data.coin2, data.chain_id).address;
 
     const methodName = "addTrade";
@@ -28,14 +28,13 @@ export async function storeOnChain(data: any) {
         data.trade_id.toString(),
         data.creator.wallet_address,
         data.amount,
-        coin1_addresss,
+        coin1_address,
         coin2_address,
       ],
     ];
 
     const transaction = await contract[methodName](...methodArgs);
-    console.log("Transaction hash:", transaction.hash);
-    transaction.wait();
+    await transaction.wait(1);
     return {
       status: 200,
       message: "Trade data stored on chain successfully",
