@@ -22,4 +22,10 @@
         "dev": "nodemon server.ts",
         "build": "tsc"
     }
+},
+"scripts": {
+    "start": "tsc && node ./dist/index.js",
+    "dev": "nodemon ./src/index.ts",
+    "build": "tsc"
+}
 }
