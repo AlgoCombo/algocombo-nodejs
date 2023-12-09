@@ -13,6 +13,11 @@ router.get("/:trade_id", async (req: Request, res: Response) => {
   return res.status(response.status).json(response);
 });
 
+router.get("/fusion/:id", async (req: Request, res: Response) => {
+  const response = await TradeController.getFusionTrades(req.params);
+  return res.status(response.status).json(response);
+});
+
 router.post("/", async (req: Request, res: Response) => {
   const response = await TradeController.createTrade(req.body);
   return res.status(response.status).json(response);
