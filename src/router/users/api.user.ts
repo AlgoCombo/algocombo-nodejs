@@ -18,4 +18,9 @@ router.post("/hot-wallet", async (req: Request, res: Response) => {
   return res.status(response.status).json(response);
 });
 
+router.get("/get-tokens", async (_: Request, res: Response) => {
+  const response = await UserController.getTokens();
+  return res.status(response.status).json(response);
+});
+
 export default router;

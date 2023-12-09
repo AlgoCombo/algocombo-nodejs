@@ -1,6 +1,7 @@
 import { recoverMessageAddress } from "viem";
 import { UserModel } from "../../models/user.model";
 import { generateWallet } from "../../utils";
+import { TOKENS } from "../../constants/tokens";
 
 class UserController {
   async getUsers(query: any) {
@@ -124,6 +125,14 @@ class UserController {
         data: error,
       };
     }
+  }
+
+  async getTokens() {
+    return {
+      status: 200,
+      message: "Tokens found",
+      data: JSON.stringify(TOKENS),
+    };
   }
 }
 
