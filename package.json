@@ -4,7 +4,6 @@
   "license": "MIT",
   "dependencies": {
     "@1inch/fusion-sdk": "^0.1.12",
-    "axios": "^1.6.2",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "ethereumjs-wallet": "^1.0.2",
@@ -28,7 +27,7 @@
   },
   "scripts": {
     "start": "tsc && node ./dist/index.js",
-    "dev": "nodemon ./src/index.ts",
+    "dev": "nodemon server.ts",
     "build": "tsc"
   }
 }

@@ -7,6 +7,7 @@ export interface ITrade extends Document {
   coin_pairs: [string];
   amount: number;
   creator: IUser;
+  isActive: boolean;
   createdAt: Date;
 }
 
@@ -20,6 +21,10 @@ export const TradeSchema: Schema = new mongoose.Schema<ITrade>({
   createdAt: {
     type: Date,
     default: Date.now, // Set the default value to the current date/time
+  },
+  isActive: {
+    type: Boolean,
+    default: true,
   },
   creator: UserSchema,
 });
