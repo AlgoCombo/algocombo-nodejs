@@ -11,6 +11,7 @@ import Web3 from "web3";
 import { OrdersByMakerResponse } from "@1inch/fusion-sdk/api/orders";
 import { TokenInfo } from "types";
 import { approveERC20Token } from "../../utils";
+import { formatUnits } from "ethers/lib/utils";
 
 function getSDK(
   chainId: number,
@@ -56,7 +57,10 @@ export async function swap(
 
   console.log("Swap Complete with result", result);
 
-  return result;
+  return {
+    data: result.orderHash,
+    amountOut: +formatUnits(result.order.takingAmount, token1.decimals),
+  };
 }
 
 export async function ordersByMaker(
