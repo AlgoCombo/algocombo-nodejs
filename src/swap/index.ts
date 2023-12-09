@@ -28,7 +28,7 @@ export async function swap(
   toTokenAddress: string,
   walletAddress: string,
   privateKey: string,
-  chainId = 80001
+  chainId: number
 ) {
   const blockchainProvider = new PrivateKeyProviderConnector(
     privateKey,

@@ -6,6 +6,7 @@ import {
   SwapType,
 } from "@uniswap/smart-order-router";
 import ERC20ABI from "../../abis/ERC20.json";
+import { BigNumber } from "ethers";
 
 // General
 import {
@@ -15,10 +16,12 @@ import {
   V3_SWAP_ROUTER_ADDRESS,
 } from "../../constants";
 import { TokenInfo } from "types";
-import { Address, parseUnits } from "viem";
+import { Address } from "viem";
+
+import { formatEther, parseUnits } from "ethers/lib/utils";
 import { ethers } from "ethers";
 
-interface ExampleConfig {
+interface BasicConfig {
   rpc: string;
   wallet: {
     address: string;
@@ -37,11 +40,21 @@ export async function approveDEX(
   chainId: number,
   token0: TokenInfo
 ) {
-  // Check allowance (ToDo Later)
-
-  const provider = new ethers.JsonRpcProvider(RPC_URLS[chainId]);
+  const provider = new ethers.providers.JsonRpcProvider(RPC_URLS[chainId]);
   const wallet = new ethers.Wallet(privateKey, provider);
   const tokenContract = new ethers.Contract(token0.address, ERC20ABI, wallet);
+
+  // Check allowance
+  const allowance = (await tokenContract.allowance(
+    wallet.address,
+    V3_SWAP_ROUTER_ADDRESS.default
+  )) as BigNumber;
+
+  if (+formatEther(allowance) >= +amountIn) {
+    console.log("Allowance already exists. No need to approve");
+    return { wait: () => {}, hash: "" };
+  }
+
   const tokenApproval = await tokenContract.approve(
     V3_SWAP_ROUTER_ADDRESS.default,
     parseUnits(amountIn.toString(), token0.decimals)
@@ -59,7 +72,7 @@ export async function swap(
   privateKey: Address,
   chainId: number
 ) {
-  const CurrentConfig: ExampleConfig = {
+  const CurrentConfig: BasicConfig = {
     rpc: RPC_URLS[chainId],
     tokens: {
       amountIn,
@@ -72,11 +85,12 @@ export async function swap(
     },
   };
 
-  const provider = new ethers.JsonRpcProvider(CurrentConfig.rpc);
+  const provider = new ethers.providers.JsonRpcProvider(CurrentConfig.rpc);
 
+  // Smart Router
   const router = new AlphaRouter({
     chainId,
-    provider: provider as any,
+    provider,
   });
 
   // Swap Options
@@ -86,11 +100,6 @@ export async function swap(
     deadline: Math.floor(Date.now() / 1000 + 1800), // 30 Minutes deadline
     type: SwapType.SWAP_ROUTER_02,
   };
-
-  //   const rawTokenAmountIn: JSBI = fromReadableAmount(
-  //     +CurrentConfig.tokens.amountIn,
-  //     CurrentConfig.tokens.in.decimals
-  //   );
 
   // Route
   const route = await router.route(
@@ -105,6 +114,7 @@ export async function swap(
 
   // Important Check. Happens in case no route between the tokens or something else
   if (!route || !route.methodParameters) {
+    console.log({ route });
     throw new Error(
       "Invalid Route. Perhaps route between tokens does not exist or network error."
     );
@@ -136,8 +146,10 @@ export async function swap(
     to: V3_SWAP_ROUTER_ADDRESS.default,
     value: route.methodParameters.value,
     from: wallet.address,
+    gasLimit: 50000,
     maxFeePerGas: MAX_FEE_PER_GAS,
     maxPriorityFeePerGas: MAX_PRIORITY_FEE_PER_GAS,
+    // gasPrice: parseUnits("200", "gwei"),
   });
 
   console.log("Swap txn it sent with hash", hash);

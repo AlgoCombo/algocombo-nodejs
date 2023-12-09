@@ -1,4 +1,5 @@
 export * from "./client";
+export * from "./tokens";
 
 export const ONE_INCH_KEY = process.env.ONE_INCH_KEY || "";
 
