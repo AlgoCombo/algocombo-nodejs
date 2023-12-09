@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "license": "MIT",
   "dependencies": {
+    "@1inch/fusion-sdk": "^0.1.12",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "ethereumjs-wallet": "^1.0.2",
