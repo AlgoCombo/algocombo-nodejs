@@ -26,7 +26,7 @@
     }
   },
   "scripts": {
-    "start": "tsc && node ./dist/index.js",
+    "start": "tsc && node ./release/server.js",
     "dev": "nodemon server.ts",
     "build": "tsc"
   }
