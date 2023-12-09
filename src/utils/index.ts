@@ -8,3 +8,5 @@ export function generateWallet() {
 
   return { address, privateKey };
 }
+
+export * from "./token";
