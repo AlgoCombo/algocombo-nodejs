@@ -2,7 +2,7 @@ import { recoverMessageAddress } from "viem";
 import { UserModel } from "../../models/user.model";
 
 class UserController {
-  async getUser(query: any) {
+  async getUsers(query: any) {
     try {
       const users = await UserModel.find(query);
       return {
