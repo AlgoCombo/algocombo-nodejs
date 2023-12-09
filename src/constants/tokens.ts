@@ -30,6 +30,6 @@ export const TOKENS = {
 
 export type SupportedChain = keyof typeof TOKENS;
 
-export const DATA_CONTRACT = {
+export const DATA_CONTRACTS = {
   137: "0x805dd8b38993334215fe50a1f5a1d2c08f662e96",
 } as Record<number, string>;

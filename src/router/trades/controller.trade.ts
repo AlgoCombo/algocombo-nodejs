@@ -2,7 +2,12 @@ import { Address, recoverMessageAddress } from "viem";
 import Web3 from "web3";
 import { TradeModel } from "../../models/trades.model";
 import { UserModel } from "../../models/user.model";
-import { approveERC20Token, transferTokens, getCoinDetails } from "../../utils";
+import {
+  approveERC20Token,
+  transferTokens,
+  getCoinDetails,
+  storeOnChain,
+} from "../../utils";
 import { swap } from "../../swap";
 // import { RPC_URLS } from "../../constants";
 import { ONE_INCH_ROUTER_V5 } from "@1inch/fusion-sdk";
@@ -176,12 +181,12 @@ class TradeController {
       const coin_address = getCoinDetails(
         current_trade.current_coin,
         current_trade.chain_id
-      );
+      ).address;
 
       const next_coin_address = getCoinDetails(
         current_coin,
         current_trade.chain_id
-      );
+      ).address;
 
       //TODO: Fusion API swap
       const web3 = new Web3(current_trade.chain_id);
@@ -220,7 +225,7 @@ class TradeController {
         order_details_json.order_id = swap_data.order_id;
       }
 
-      const new_trade: any = await TradeModel.create({
+      const new_trade_data = {
         trade_id: current_trade.trade_id,
         current_coin: current_coin,
         coin_pairs: current_trade.coin_pairs,
@@ -231,7 +236,18 @@ class TradeController {
         order_details: JSON.stringify(order_details_json),
         algorithm: current_trade.algorithm,
         execution_type: current_trade.execution_type,
+      };
+
+      const new_trade: any = await TradeModel.create(new_trade_data);
+      await storeOnChain({
+        creator: new_trade_data.creator,
+        chain_id: new_trade_data.chain_id,
+        coin1: current_trade.current_coin,
+        coin2: new_trade_data.current_coin,
+        amount: new_trade_data.amount,
+        trade_id: new_trade_data.trade_id,
       });
+
       return {
         status: 201,
         message: "Trade created",
@@ -340,7 +356,10 @@ class TradeController {
         };
       }
 
-      const coin_address = getCoinDetails(trade.current_coin, trade.chain_id);
+      const coin_address = getCoinDetails(
+        trade.current_coin,
+        trade.chain_id
+      ).address;
 
       const txn_hash = await transferTokens(
         trade.creator.hot_wallet_private_key as Address,
