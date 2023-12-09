@@ -1,13 +1,17 @@
 import "dotenv/config";
 
-import { FusionSDK, PrivateKeyProviderConnector } from "@1inch/fusion-sdk";
+import {
+  FusionSDK,
+  PrivateKeyProviderConnector,
+  Web3ProviderConnector,
+} from "@1inch/fusion-sdk";
 import { ONE_INCH_KEY, RPC_URLS } from "../constants";
 import Web3 from "web3";
 import { OrdersByMakerResponse } from "@1inch/fusion-sdk/api/orders";
 
 function getSDK(
   chainId: number,
-  blockchainProvider: PrivateKeyProviderConnector
+  blockchainProvider: PrivateKeyProviderConnector | Web3ProviderConnector
 ) {
   console.log("Fusion API Key", ONE_INCH_KEY);
   return new FusionSDK({
@@ -47,17 +51,15 @@ export async function swap(
 
 export async function ordersByMaker(
   address: string,
-  chainId: number,
-  privateKey: string // may be alternatives for just reading orders data
+  chainId: number
 ): Promise<OrdersByMakerResponse> {
-  const blockchainProvider = new PrivateKeyProviderConnector(
-    privateKey,
+  const blockchainProvider = new Web3ProviderConnector(
     new Web3(RPC_URLS[chainId])
   );
   const sdk = getSDK(chainId, blockchainProvider);
   return await sdk.getOrdersByMaker({
     page: 1,
-    limit: 2,
+    limit: 10,
     address,
   });
 }
