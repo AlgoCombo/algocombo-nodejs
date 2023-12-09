@@ -28,7 +28,6 @@
     "scripts": {
         "start": "tsc && node ./dist/index.js",
         "dev": "nodemon server.ts",
-        "build": "tsc",
-        "prod": "tsx -r dotenv/config server.ts"
+        "build": "tsc"
     }
 }
