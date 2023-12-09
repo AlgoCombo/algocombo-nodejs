@@ -1,5 +1,5 @@
 import mongoose, { Document, Model, Schema } from "mongoose";
-import { IUser, UserSchema } from "./user.model.ts";
+import { IUser, UserSchema } from "./user.model";
 
 export interface ITrade extends Document {
   trade_id: number;
@@ -38,7 +38,7 @@ TradeSchema.pre<ITrade>("save", async function (next) {
         trade.trade_id = 1;
       }
       next();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error:", error);
       next(error);
     }
