@@ -29,3 +29,7 @@ export const TOKENS = {
 } as Record<number, TokenDetails[]>;
 
 export type SupportedChain = keyof typeof TOKENS;
+
+export const DATA_CONTRACT = {
+  137: "0x805dd8b38993334215fe50a1f5a1d2c08f662e96",
+} as Record<number, string>;
