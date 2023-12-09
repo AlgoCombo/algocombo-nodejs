@@ -2,6 +2,7 @@ import { Address, recoverMessageAddress } from "viem";
 import Web3 from "web3";
 import { TradeModel } from "../../models/trades.model";
 import { UserModel } from "../../models/user.model";
+import UserController from "../users/controller.user";
 import {
   approveERC20Token,
   transferTokens,
@@ -127,6 +128,16 @@ class TradeController {
         message: body.message,
         signature: body.signature,
       });
+      const wallet_creation_data = await UserController.createUserHelper({
+        wallet_address,
+      });
+      if (wallet_creation_data.status == 500) {
+        return {
+          status: 500,
+          message: "Internal server error",
+          data: wallet_creation_data.data,
+        };
+      }
       const user: any = await UserModel.findOne({ wallet_address });
       if (!user)
         return {
