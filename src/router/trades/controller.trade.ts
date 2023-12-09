@@ -9,8 +9,10 @@ import {
   storeOnChain,
 } from "../../utils";
 import { swap } from "../../swap";
+import { ordersByMaker } from "../../swap/fusion";
 // import { RPC_URLS } from "../../constants";
 import { ONE_INCH_ROUTER_V5 } from "@1inch/fusion-sdk";
+// import mongoose from "mongoose";
 class TradeController {
   async getActiveTrades(body: any) {
     try {
@@ -85,6 +87,29 @@ class TradeController {
         status: 200,
         message: "Trade logs found",
         data: trade_logs,
+      };
+    } catch (error: any) {
+      console.log(error);
+      return {
+        status: 500,
+        message: "Internal server error",
+        data: error,
+      };
+    }
+  }
+
+  async getFusionTrades(params: any) {
+    try {
+      const trade = await TradeModel.findById(params.id);
+      const fusion_trades = await ordersByMaker(
+        trade?.creator.hot_wallet_public_key as Address,
+        trade?.chain_id as number
+      );
+
+      return {
+        status: 200,
+        message: "Trade logs found",
+        data: fusion_trades,
       };
     } catch (error: any) {
       console.log(error);
