@@ -149,7 +149,7 @@ export async function swap(
     to: V3_SWAP_ROUTER_ADDRESS.default,
     value: route.methodParameters.value,
     from: wallet.address,
-    gasLimit: 50_000,
+    gasLimit: 40_000,
     maxFeePerGas: feeData.maxFeePerGas || MAX_FEE_PER_GAS,
     maxPriorityFeePerGas:
       feeData.maxPriorityFeePerGas || MAX_PRIORITY_FEE_PER_GAS,
