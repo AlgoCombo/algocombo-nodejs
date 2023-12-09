@@ -4,6 +4,9 @@
   "license": "MIT",
   "dependencies": {
     "@1inch/fusion-sdk": "^0.1.12",
+    "@uniswap/sdk-core": "^4.0.9",
+    "@uniswap/smart-order-router": "^3.19.2",
+    "@uniswap/v3-sdk": "^3.10.0",
     "axios": "^1.6.2",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",

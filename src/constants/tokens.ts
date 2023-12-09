@@ -16,4 +16,4 @@ export const TOKENS = {
       decimals: 6,
     },
   ],
-};
+} as const;
