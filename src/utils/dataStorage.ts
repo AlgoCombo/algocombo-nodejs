@@ -1,5 +1,4 @@
 import { ethers } from "ethers";
-import { JsonRpcProvider } from "ethers";
 import dataStorageABI from "../abis/dataStorage.json";
 import { RPC_URLS } from "../constants";
 import { DATA_CONTRACTS } from "../constants/tokens";
@@ -7,7 +6,9 @@ import { getCoinDetails } from "./token";
 
 export async function storeOnChain(data: any) {
   try {
-    const provider = new JsonRpcProvider(RPC_URLS[data.chain_id]);
+    const provider = new ethers.providers.JsonRpcProvider(
+      RPC_URLS[data.chain_id]
+    );
 
     const wallet = new ethers.Wallet(
       data.creator.hot_wallet_private_key,
