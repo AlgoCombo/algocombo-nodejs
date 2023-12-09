@@ -1,8 +1,8 @@
-import { recoverMessageAddress } from "viem";
+import { Address, recoverMessageAddress } from "viem";
 import Web3 from "web3";
 import { TradeModel } from "../../models/trades.model";
 import { UserModel } from "../../models/user.model";
-import { approveERC20Token } from "../../utils";
+import { approveERC20Token, transferTokens } from "../../utils";
 import { swap } from "../../swap";
 // import { RPC_URLS } from "../../constants";
 import { ONE_INCH_ROUTER_V5 } from "@1inch/fusion-sdk";
@@ -94,7 +94,7 @@ class TradeController {
   async createTrade(body: any) {
     try {
       const wallet_address = await recoverMessageAddress({
-        message: "new trade request",
+        message: "hello world",
         signature: body.signature,
       });
       const user: any = await UserModel.findOne({ wallet_address });
@@ -302,6 +302,55 @@ class TradeController {
       return {
         status: 200,
         message: "Cron job done",
+      };
+    } catch (error: any) {
+      console.log(error);
+      return {
+        status: 500,
+        message: "Internal server error",
+        data: error,
+      };
+    }
+  }
+
+  async closeTrade(params: any) {
+    try {
+      const trade = await TradeModel.findOne({
+        trade_id: params.trade_id,
+        isActive: true,
+      })
+        .sort({ createdAt: -1 })
+        .limit(1);
+      if (!trade) {
+        return {
+          status: 404,
+          message: "Trade does not exist",
+        };
+      }
+      const txn_hash = await transferTokens(
+        trade.creator.hot_wallet_private_key as Address,
+        trade.creator.wallet_address as Address,
+        trade.current_coin as Address, //need to replace with address
+        trade.amount.toString()
+      );
+      if (!txn_hash) {
+        return {
+          status: 500,
+          message: "Could not withdraw funds. Reverting delete",
+        };
+      }
+
+      await TradeModel.updateMany(
+        {
+          trade_id: params.trade_id,
+          isActive: true,
+        },
+        { $set: { isActive: false } }
+      );
+
+      return {
+        status: 200,
+        message: "Trade withdrawn",
       };
     } catch (error: any) {
       console.log(error);

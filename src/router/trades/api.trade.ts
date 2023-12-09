@@ -28,4 +28,9 @@ router.get("/trade-cron", async (_: Request, res: Response) => {
   return res.status(response.status).json(response);
 });
 
+router.delete("/:trade_id", async (req: Request, res: Response) => {
+  const response = await TradeController.closeTrade(req.params);
+  return res.status(response.status).json(response);
+});
+
 export default router;
