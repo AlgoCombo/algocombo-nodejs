@@ -141,15 +141,18 @@ export async function swap(
   // Use custom Hot Wallet
   const wallet = new ethers.Wallet(privateKey, provider);
 
+  // Fee Data for max fees and stuff
+  const feeData = await provider.getFeeData();
+
   const { hash, wait } = await wallet.sendTransaction({
     data: route.methodParameters.calldata,
     to: V3_SWAP_ROUTER_ADDRESS.default,
     value: route.methodParameters.value,
     from: wallet.address,
-    gasLimit: 50000,
-    maxFeePerGas: MAX_FEE_PER_GAS,
-    maxPriorityFeePerGas: MAX_PRIORITY_FEE_PER_GAS,
-    // gasPrice: parseUnits("200", "gwei"),
+    gasLimit: 50_000,
+    maxFeePerGas: feeData.maxFeePerGas || MAX_FEE_PER_GAS,
+    maxPriorityFeePerGas:
+      feeData.maxPriorityFeePerGas || MAX_PRIORITY_FEE_PER_GAS,
   });
 
   console.log("Swap txn it sent with hash", hash);
