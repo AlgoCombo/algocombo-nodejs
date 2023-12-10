@@ -2,6 +2,7 @@ import { Address } from "viem";
 import { Token } from "@uniswap/sdk-core";
 
 export interface TokenInfo {
+  name?: string
   symbol: string;
   address: Address;
   decimals: number;
