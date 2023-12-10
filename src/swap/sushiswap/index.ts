@@ -14,9 +14,9 @@ export async function swap(
   amountIn: string,
   token0: TokenInfo,
   token1: TokenInfo,
-  walletAddress: Address,
+  _walletAddress: Address,
   privateKey: Address,
-  chainId: number
+  _chainId: number
 ) {
   const account = privateKeyToAccount(privateKey);
 
