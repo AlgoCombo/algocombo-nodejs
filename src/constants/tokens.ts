@@ -1,9 +1,4 @@
-interface TokenDetails {
-  name: string;
-  symbol: string;
-  address: string;
-  decimals: number;
-}
+import { TokenInfo } from "types";
 
 export const TOKENS = {
   137: [
@@ -26,7 +21,21 @@ export const TOKENS = {
       decimals: 6,
     },
   ],
-} as Record<number, TokenDetails[]>;
+  42161: [
+    {
+      name: "wrapped-ether",
+      symbol: "WETH",
+      address: "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+      decimals: 18,
+    },
+    {
+      name: "tether",
+      symbol: "USDT",
+      address: "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+      decimals: 6,
+    },
+  ],
+} as Record<number, TokenInfo[]>;
 
 export type SupportedChain = keyof typeof TOKENS;
 
