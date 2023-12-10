@@ -1,5 +1,5 @@
 import { TokenInfo } from "types";
-import { Address, createWalletClient, http } from "viem";
+import { Address, createPublicClient, createWalletClient, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { arbitrum } from "viem/chains";
 
@@ -8,7 +8,6 @@ import ERC20ABI from "../../abis/ERC20.json";
 
 import { V3_SWAP_ROUTER_ADDRESS } from "../../constants";
 import { MaxUint256 } from "@uniswap/sdk-core";
-import { waitForTransactionReceipt } from "viem/_types/actions/public/waitForTransactionReceipt";
 
 export async function swap(
   amountIn: string,
@@ -26,6 +25,11 @@ export async function swap(
     account,
   });
 
+  const publicClient = createPublicClient({
+    chain: arbitrum,
+    transport: http(),
+  });
+
   console.log("About to ask for approval");
 
   // Approve ERC20 token0 to SwapRouter of Sushi
@@ -39,7 +43,7 @@ export async function swap(
   console.log("Waiting for approval...");
 
   // Wait for approval
-  await waitForTransactionReceipt(walletClient, { hash: hashApprove });
+  await publicClient.waitForTransactionReceipt({ hash: hashApprove });
 
   console.log("Approved. Swapping...");
 
