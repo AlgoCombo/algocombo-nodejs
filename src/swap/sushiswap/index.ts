@@ -36,7 +36,7 @@ export async function swap(
     transport: http(),
   });
 
-  console.log("About to ask for approval");
+  console.log("About to check for approval");
 
   // Check allowance
   const allowance = (await publicClient.readContract({
