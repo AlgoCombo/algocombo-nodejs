@@ -140,9 +140,9 @@ export async function swap(
     from: wallet.address,
     gasLimit: 10_000_000,
     maxFeePerGas:
-      feeData.maxFeePerGas?.mul("200").div("100") || MAX_FEE_PER_GAS,
+      feeData.maxFeePerGas?.mul("300").div("100") || MAX_FEE_PER_GAS,
     maxPriorityFeePerGas:
-      feeData.maxPriorityFeePerGas?.mul("200").div("100") ||
+      feeData.maxPriorityFeePerGas?.mul("300").div("100") ||
       MAX_PRIORITY_FEE_PER_GAS,
   });
 
