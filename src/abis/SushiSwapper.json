@@ -1,0 +1,124 @@
+[
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_sushiRouterAddress",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "user",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "tokenIn",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "tokenOut",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "amountIn",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "amountOut",
+                "type": "uint256"
+            }
+        ],
+        "name": "SwapEvent",
+        "type": "event"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_user",
+                "type": "address"
+            }
+        ],
+        "name": "getSwaps",
+        "outputs": [
+            {
+                "components": [
+                    {
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "tokenIn",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "tokenOut",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amountIn",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amountOut",
+                        "type": "uint256"
+                    }
+                ],
+                "internalType": "struct SushiSwapper.Swap[]",
+                "name": "",
+                "type": "tuple[]"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "tokenIn",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "tokenOut",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "amountIn",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "amountOutMin",
+                "type": "uint256"
+            }
+        ],
+        "name": "swapTokens",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    }
+]
