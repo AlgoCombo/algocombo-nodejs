@@ -18,51 +18,54 @@ class TradeController {
   async getActiveTrades(body: any) {
     try {
       const wallet_address = body.wallet_address;
+      console.log(wallet_address);
 
-      const earliestTrades = await TradeModel.aggregate([
-        {
-          $match: {
-            "creator.wallet_address": wallet_address,
-            isActive: true,
-          },
-        },
-        {
-          $sort: { createdAt: 1 }, // Sort by createdAt in ascending order
-        },
-        {
-          $group: {
-            _id: "$trade_id",
-            earliestTrade: { $first: "$$ROOT" }, // Get the earliest trade in each group
-          },
-        },
-      ]);
+      // const earliestTrades = await TradeModel.aggregate([
+      //   {
+      //     $match: {
+      //       "creator.wallet_address": wallet_address,
+      //       isActive: true,
+      //     },
+      //   },
+      //   {
+      //     $sort: { createdAt: 1 }, // Sort by createdAt in ascending order
+      //   },
+      //   {
+      //     $group: {
+      //       _id: "$trade_id",
+      //       earliestTrade: { $first: "$$ROOT" }, // Get the earliest trade in each group
+      //     },
+      //   },
+      // ]);
 
-      // For the latest trade
-      const latestTrades = await TradeModel.aggregate([
-        {
-          $match: {
-            "creator.wallet_address": wallet_address,
-            isActive: true,
-          },
-        },
-        {
-          $sort: { createdAt: -1 }, // Sort by createdAt in descending order
-        },
-        {
-          $group: {
-            _id: "$trade_id",
-            latestTrade: { $first: "$$ROOT" }, // Get the latest trade in each group
-          },
-        },
-      ]);
+      // // For the latest trade
+      // const latestTrades = await TradeModel.aggregate([
+      //   {
+      //     $match: {
+      //       "creator.wallet_address": wallet_address,
+      //       isActive: true,
+      //     },
+      //   },
+      //   {
+      //     $sort: { createdAt: -1 }, // Sort by createdAt in descending order
+      //   },
+      //   {
+      //     $group: {
+      //       _id: "$trade_id",
+      //       latestTrade: { $first: "$$ROOT" }, // Get the latest trade in each group
+      //     },
+      //   },
+      // ]);
 
-      const earliestMap = new Map(
-        earliestTrades.map((trade) => [trade._id, trade])
-      );
-      const mergedData = latestTrades.map((trade) => ({
-        earliest: earliestMap.get(trade._id),
-        latest: trade,
-      }));
+      // const earliestMap = new Map(
+      //   earliestTrades.map((trade) => [trade._id, trade])
+      // );
+      // const mergedData = latestTrades.map((trade) => ({
+      //   earliest: earliestMap.get(trade._id),
+      //   latest: trade,
+      // }));
+
+      const mergedData = await TradeModel.find({});
 
       return {
         status: 200,
