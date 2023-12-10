@@ -1,10 +1,10 @@
 import { Address, recoverMessageAddress } from "viem";
-import Web3 from "web3";
+// import Web3 from "web3";
 import { TradeModel } from "../../models/trades.model";
 import { UserModel } from "../../models/user.model";
 import UserController from "../users/controller.user";
 import {
-  approveERC20Token,
+  // approveERC20Token,
   transferTokens,
   getCoinDetails,
   storeOnChain,
@@ -12,10 +12,74 @@ import {
 import { swap } from "../../swap";
 import { ordersByMaker } from "../../swap/fusion";
 // import { RPC_URLS } from "../../constants";
-import { ONE_INCH_ROUTER_V5 } from "@1inch/fusion-sdk";
+// import { ONE_INCH_ROUTER_V5 } from "@1inch/fusion-sdk";
 // import mongoose from "mongoose";
 class TradeController {
   async getActiveTrades(body: any) {
+    try {
+      const wallet_address = body.wallet_address;
+
+      const earliestTrades = await TradeModel.aggregate([
+        {
+          $match: {
+            "creator.wallet_address": wallet_address,
+            isActive: true,
+          },
+        },
+        {
+          $sort: { createdAt: 1 }, // Sort by createdAt in ascending order
+        },
+        {
+          $group: {
+            _id: "$trade_id",
+            earliestTrade: { $first: "$$ROOT" }, // Get the earliest trade in each group
+          },
+        },
+      ]);
+
+      // For the latest trade
+      const latestTrades = await TradeModel.aggregate([
+        {
+          $match: {
+            "creator.wallet_address": wallet_address,
+            isActive: true,
+          },
+        },
+        {
+          $sort: { createdAt: -1 }, // Sort by createdAt in descending order
+        },
+        {
+          $group: {
+            _id: "$trade_id",
+            latestTrade: { $first: "$$ROOT" }, // Get the latest trade in each group
+          },
+        },
+      ]);
+
+      const earliestMap = new Map(
+        earliestTrades.map((trade) => [trade._id, trade])
+      );
+      const mergedData = latestTrades.map((trade) => ({
+        earliest: earliestMap.get(trade._id),
+        latest: trade,
+      }));
+
+      return {
+        status: 200,
+        message: "Trades found",
+        data: mergedData,
+      };
+    } catch (error: any) {
+      console.log(error);
+      return {
+        status: 500,
+        message: "Internal server error",
+        data: error,
+      };
+    }
+  }
+
+  async getAllTrades(body: any) {
     try {
       const wallet_address = body.wallet_address;
       console.log(wallet_address);
@@ -230,22 +294,6 @@ class TradeController {
       ).address;
 
       //TODO: Fusion API swap
-      const web3 = new Web3(current_trade.chain_id);
-      console.log("Approving...");
-      const approval_status = await approveERC20Token(
-        web3,
-        coin_address,
-        current_trade.creator.hot_wallet_private_key,
-        ONE_INCH_ROUTER_V5,
-        current_trade.amount
-      );
-      if (!approval_status) {
-        return {
-          status: 403,
-          message: "Approval failed",
-          data: null,
-        };
-      }
 
       const swap_params = {
         amountIn: current_trade.amount,
@@ -256,6 +304,7 @@ class TradeController {
         chainId: current_trade.chainId,
       };
 
+      console.log(swap_params);
       const swap_data: any = await swap(
         swap_params,
         current_trade.execution_type
