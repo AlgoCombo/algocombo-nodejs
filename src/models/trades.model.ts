@@ -21,7 +21,7 @@ export const TradeSchema: Schema = new mongoose.Schema<ITrade>({
   },
   current_coin: String,
   coin_pairs: [String],
-  amount: Number,
+  amount: String,
   chain_id: Number,
   createdAt: {
     type: Date,

@@ -283,28 +283,24 @@ class TradeController {
         }
       }
 
-      const coin_address = getCoinDetails(
+      const token0 = getCoinDetails(
         current_trade.current_coin,
         current_trade.chain_id
-      ).address;
+      );
 
-      const next_coin_address = getCoinDetails(
-        current_coin,
-        current_trade.chain_id
-      ).address;
+      const token1 = getCoinDetails(current_coin, current_trade.chain_id);
 
       //TODO: Fusion API swap
 
       const swap_params = {
         amountIn: current_trade.amount,
-        token0: coin_address,
-        token1: next_coin_address,
+        token0: token0,
+        token1: token1,
         walletAddress: current_trade.creator.hot_wallet_public_key as Address,
         privateKey: current_trade.creator.hot_wallet_private_key as Address,
-        chainId: current_trade.chainId,
+        chainId: current_trade.chain_id,
       };
 
-      console.log(swap_params);
       const swap_data: any = await swap(
         swap_params,
         current_trade.execution_type

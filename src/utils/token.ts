@@ -20,13 +20,14 @@ export async function approveERC20Token(
     web3.eth.defaultAccount = account.address;
 
     /// Check Allowance otherwise Approve
-    const allowance = (await tokenContract.methods.allowance(
-      account.address,
-      spenderAddress
-    )) as BigNumber;
+    const allowance = (await tokenContract.methods
+      .allowance(account.address, spenderAddress)
+      .call()) as BigNumber;
+    // console.log("Allowance:", allowance);
     if (+formatEther(allowance) >= +amount) {
       return true; // No need to approve any furthur
     }
+
     ///
 
     // @ts-ignore
@@ -61,9 +62,10 @@ export async function approveERC20Token(
 
 export function getCoinDetails(coin: string, chain_id: number) {
   try {
-    const coin_details: any = TOKENS[chain_id].filter(
+    // @ts-ignore
+    const coin_details: any = TOKENS[chain_id]!.find(
       (token: any) => token.name === coin
-    )[0];
+    );
     return coin_details;
   } catch (error) {
     console.error("Failed to get token data:", error);

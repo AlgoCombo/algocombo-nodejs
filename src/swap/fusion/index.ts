@@ -6,12 +6,12 @@ import {
   PrivateKeyProviderConnector,
   Web3ProviderConnector,
 } from "@1inch/fusion-sdk";
-import { ONE_INCH_KEY, RPC_URLS, TOKENS } from "../../constants";
+import { ONE_INCH_KEY, RPC_URLS } from "../../constants";
 import Web3 from "web3";
 import { OrdersByMakerResponse } from "@1inch/fusion-sdk/api/orders";
 import { TokenInfo } from "types";
 import { approveERC20Token } from "../../utils";
-import { formatUnits } from "ethers/lib/utils";
+import { formatUnits, parseUnits } from "ethers/lib/utils";
 
 function getSDK(
   chainId: number,
@@ -34,6 +34,8 @@ export async function swap(
   privateKey: string,
   chainId: number
 ) {
+  const amountIn = parseUnits(amount.toString(), token0.decimals).toString();
+  console.log("bam", amount, amountIn);
   const web3 = new Web3(RPC_URLS[chainId]);
   const blockchainProvider = new PrivateKeyProviderConnector(privateKey, web3);
 
@@ -42,16 +44,16 @@ export async function swap(
   // Check Allowance otherwise Approve
   await approveERC20Token(
     web3,
-    TOKENS[137][0].address,
+    token0.address,
     privateKey,
     ONE_INCH_ROUTER_V5,
-    amount
+    amountIn
   );
 
   const result = await sdk.placeOrder({
     fromTokenAddress: token0.address,
     toTokenAddress: token1.address,
-    amount,
+    amount: amountIn,
     walletAddress,
   });
 
