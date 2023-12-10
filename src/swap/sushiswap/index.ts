@@ -1,5 +1,11 @@
 import { TokenInfo } from "types";
-import { Address, createPublicClient, createWalletClient, http } from "viem";
+import {
+  Address,
+  createPublicClient,
+  createWalletClient,
+  http,
+  parseUnits,
+} from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { arbitrum } from "viem/chains";
 
@@ -13,11 +19,11 @@ export async function swap(
   amountIn: string,
   token0: TokenInfo,
   token1: TokenInfo,
-  _walletAddress: Address,
+  walletAddress: Address,
   privateKey: Address,
   _chainId: number
 ) {
-  const account = privateKeyToAccount(privateKey);
+  const account = privateKeyToAccount(`0x${privateKey}`);
 
   const walletClient = createWalletClient({
     chain: arbitrum,
@@ -30,29 +36,45 @@ export async function swap(
     transport: http(),
   });
 
-  console.log("About to ask for approval");
+  console.log("About to check for approval");
 
-  // Approve ERC20 token0 to SwapRouter of Sushi
-  const hashApprove = await walletClient.writeContract({
+  // Check allowance
+  const allowance = (await publicClient.readContract({
     abi: ERC20ABI,
     address: token0.address,
-    functionName: "approve",
-    args: [V3_SWAP_ROUTER_ADDRESS.arbitrum, MaxUint256],
-  });
+    functionName: "allowance",
+    args: [walletAddress, V3_SWAP_ROUTER_ADDRESS.arbitrum],
+  })) as bigint;
 
-  console.log("Waiting for approval...");
+  if (allowance < parseUnits(amountIn, token0.decimals)) {
+    // Approve ERC20 token0 to SwapRouter of Sushi
+    const hashApprove = await walletClient.writeContract({
+      abi: ERC20ABI,
+      address: token0.address,
+      functionName: "approve",
+      args: [V3_SWAP_ROUTER_ADDRESS.arbitrum, MaxUint256],
+    });
 
-  // Wait for approval
-  await publicClient.waitForTransactionReceipt({ hash: hashApprove });
+    console.log("Waiting for approval...");
 
-  console.log("Approved. Swapping...");
+    // Wait for approval
+    await publicClient.waitForTransactionReceipt({ hash: hashApprove });
 
+    console.log("Approved.");
+  }
+
+  console.log("Swapping...");
   // Execute Swap
   const hash = await walletClient.writeContract({
     abi,
     address: V3_SWAP_ROUTER_ADDRESS["arbitrum"] as Address,
     functionName: "swapTokens",
-    args: [token0.address, token1.address, amountIn, 0],
+    args: [
+      token0.address,
+      token1.address,
+      parseUnits(amountIn, token0.decimals),
+      0,
+    ],
   });
 
   console.log("Swap transaction taking place with hash ", hash);
